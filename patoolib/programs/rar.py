@@ -21,13 +21,13 @@ def extract_rar(
     archive, compression, cmd, verbosity, interactive, outdir, password=None
 ):
     """Extract a RAR archive."""
-    cmdlist = [cmd, 'x']
+    cmdlist = [cmd, '-kb', 'x']
     if not interactive:
         cmdlist.extend(['-p-', '-y'])
     if password:
         cmdlist.append(f'-p{password}')
     cmdlist.extend(['--', os.path.abspath(archive)])
-    return (cmdlist, {'cwd': outdir})
+    return (cmdlist, {'cwd': outdir, 'ret_ok': (0, 3)})
 
 
 def list_rar(archive, compression, cmd, verbosity, interactive, password=None):
@@ -47,13 +47,13 @@ def list_rar(archive, compression, cmd, verbosity, interactive, password=None):
 
 def test_rar(archive, compression, cmd, verbosity, interactive, password=None):
     """Test a RAR archive."""
-    cmdlist = [cmd, 't']
+    cmdlist = [cmd, '-kb', 't']
     if not interactive:
         cmdlist.extend(['-p-', '-y'])
     if password:
         cmdlist.append(f'-p{password}')
     cmdlist.extend(['--', archive])
-    return cmdlist
+    return cmdlist, {'ret_ok': (0, 3)}
 
 
 def create_rar(
