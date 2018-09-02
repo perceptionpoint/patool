@@ -20,6 +20,13 @@ from .. import fileutil, util
 
 READ_SIZE_BYTES = 1024 * 1024
 
+READ_SIZE_BYTES = 1024*1024
+
+
+# handling tgz files
+def extract_tar(archive, compression, cmd, verbosity, interactive, outdir):
+    return extract_gzip(archive, compression, cmd, verbosity, interactive, outdir)
+
 
 def extract_gzip(archive, compression, cmd, verbosity, interactive, outdir):
     """Extract a GZIP archive with the gzip Python module."""

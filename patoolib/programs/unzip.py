@@ -26,6 +26,9 @@ def extract_zip(
     """Extract a ZIP archive."""
     cmdlist = [cmd]
     _maybe_add_password(cmdlist, password)
+    if not interactive:
+        cmdlist.append('-o')
+
     cmdlist.extend(['--', archive, '-d', outdir])
     return cmdlist
 
@@ -36,6 +39,10 @@ def list_zip(archive, compression, cmd, verbosity, interactive, password=None):
     if verbosity > 1:
         cmdlist.append('-v')
     _maybe_add_password(cmdlist, password)
+
+    if not interactive:
+        cmdlist.append('-o')
+
     cmdlist.extend(['--', archive])
     return cmdlist
 
@@ -44,5 +51,9 @@ def test_zip(archive, compression, cmd, verbosity, interactive, password=None):
     """Test a ZIP archive."""
     cmdlist = [cmd, '-t']
     _maybe_add_password(cmdlist, password)
+
+    if not interactive:
+        cmdlist.append('-o')
+
     cmdlist.extend(['--', archive])
     return cmdlist
