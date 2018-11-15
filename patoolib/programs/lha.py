@@ -18,6 +18,8 @@
 def extract_lzh (archive, compression, cmd, verbosity, interactive, outdir):
     """Extract a LZH archive."""
     opts = 'x'
+    if not interactive:
+        opts += 'f'
     if verbosity > 1:
         opts += 'v'
     opts += "w=%s" % outdir

@@ -177,6 +177,10 @@ ArchivePrograms = {
         None: ('lha',),
         'extract': ('lhasa',),
     },
+    'lha': {
+        None: ('lha',),
+        'extract': ('lhasa',),
+    },
     'lzip': {
         'extract': ('plzip', 'lzip', 'clzip', 'pdlzip'),
         'list': ('py_echo',),
