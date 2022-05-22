@@ -249,6 +249,8 @@ FileText2Mime = {
     "FLAC audio bitstream data": "audio/flac",
     "MS Windows HtmlHelp Data": "application/x-chm",
     "ZPAQ stream": "application/zpaq",
+    ".*RAR self-extracting archive": "application/x-rar",
+    ".*(?<!RAR )self-extracting archive": "application/x-7z-compressed",
 }
 
 
