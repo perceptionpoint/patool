@@ -17,6 +17,7 @@
 import os
 import mimetypes
 import subprocess
+import re
 from . import ArchiveMimetypes, ArchiveCompressions
 from .log import log_error, log_warning
 from .util import memoized, find_program, backtick
@@ -248,6 +249,8 @@ FileText2Mime = {
     "FLAC audio bitstream data": "audio/flac",
     "MS Windows HtmlHelp Data": "application/x-chm",
     "ZPAQ stream": "application/zpaq",
+    ".*RAR self-extracting archive": "application/x-rar",
+    ".*(?<!RAR )self-extracting archive": "application/x-7z-compressed",
 }
 
 
@@ -262,7 +265,7 @@ def guess_mime_file_text(file_prog, filename):
         return None
     # match output against known strings
     for matcher, mime in FileText2Mime.items():
-        if output.startswith(matcher) and mime in ArchiveMimetypes:
+        if re.match(matcher, output) and mime in ArchiveMimetypes:
             return mime
     return None
 
