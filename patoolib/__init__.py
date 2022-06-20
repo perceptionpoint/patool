@@ -1337,7 +1337,7 @@ def repack_archive(archive, archive_new, verbosity=0, interactive=True, password
 def get_inner_file_names_zip(file_path):
     try:
         zip_file = zipfile.ZipFile(file_path)
-        return [file_name for file_name in zip_file.namelist()]
+        return zip_file.namelist()
     except Exception:
         return []
 
@@ -1345,7 +1345,7 @@ def get_inner_file_names_zip(file_path):
 def get_inner_file_names_7zip(file_path):
     try:
         archive = py7zlib.Archive7z(open(file_path, "rb"))
-        return [file_name for file_name in archive.filenames]
+        return archive.filenames
     except Exception:
         return []
 
@@ -1353,7 +1353,7 @@ def get_inner_file_names_7zip(file_path):
 def get_inner_file_names_rar(file_path):
     try:
         rar_file = rarfile.RarFile(file_path)
-        return [file_name for file_name in rar_file.namelist()]
+        return rar_file.namelist()
     except Exception:
         return []
 
