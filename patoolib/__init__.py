@@ -71,6 +71,7 @@ ArchiveFormats = (
     'flac',
     'gzip',
     'iso',
+    'udf',
     'lrzip',
     'lz4',
     'lzh',
@@ -128,6 +129,7 @@ ArchiveMimetypes = {
     'application/x-dms': 'dms',
     'application/x-gzip': 'gzip',
     'application/x-iso9660-image': 'iso',
+    'application/x-iso13346-image': 'udf',
     'application/x-lz4': 'lz4',
     'application/x-lzop': 'lzop',
     'application/x-lzma': 'lzma',
@@ -267,6 +269,11 @@ ArchivePrograms = {
             '7zzs',
         ),
         'create': ('genisoimage',),
+    },
+    'udf': {
+        'extract': ('7z',),
+        'list': ('7z',),
+        'test': ('7z',),
     },
     'lz4': {None: ('lz4',)},
     'lzh': {
