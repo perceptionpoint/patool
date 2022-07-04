@@ -21,3 +21,5 @@ __pycache__
 /done.txt
 /report.txt
 /.python-version
+
+.idea/
