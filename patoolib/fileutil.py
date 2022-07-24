@@ -25,6 +25,11 @@ from .util import PatoolError
 
 def check_existing_filename(filename, onlyfiles=True):
     """Ensure that given filename is a valid, existing file."""
+    if filename.endswith("/*"):
+        if os.path.exists(os.path.dirname(filename)):
+            return None
+        else:
+            raise PatoolError(f"directory `{filename}' was not found")
     if not os.path.exists(filename):
         raise PatoolError(f"file `{filename}' was not found")
     if not os.access(filename, os.R_OK):
