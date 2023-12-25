@@ -18,7 +18,7 @@ import os
 
 def extract_rar (archive, compression, cmd, verbosity, interactive, outdir):
     """Extract a RAR archive."""
-    cmdlist = [cmd, '-kb', 'x']
+    cmdlist = [cmd, '-kb', '-or', 'x']
     if not interactive:
         cmdlist.extend(['-p-', '-y'])
     cmdlist.extend(['--', os.path.abspath(archive)])
