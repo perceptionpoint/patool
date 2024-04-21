@@ -40,7 +40,7 @@ ArchiveFormats = (
     '7z', 'ace', 'adf', 'alzip', 'ape', 'ar', 'arc', 'arj',
     'bzip2', 'cab', 'chm', 'compress', 'cpio', 'deb', 'dms',
     'flac', 'gzip', 'iso', 'udf', 'lrzip', 'lzh', 'lzip', 'lzma', 'lzop',
-    'rar', 'rpm', 'rzip', 'shar', 'shn', 'tar', 'vhd', 'xz',
+    'rar', 'rpm', 'rzip', 'shar', 'shn', 'tar', 'vhd', 'vhdx', 'xz',
     'zip', 'zoo', 'zpaq')
 
 # Supported compressions (used with tar for example)
@@ -84,6 +84,7 @@ ArchiveMimetypes = {
     'application/x-shar': 'shar',
     'application/x-tar': 'tar',
     'application/x-vhd': 'vhd',
+    'application/x-vhdx-disk': 'vhdx',
     'application/x-xz': 'xz',
     'application/x-zip-compressed': 'zip',
     'application/x-zoo': 'zoo',
@@ -271,6 +272,11 @@ ArchivePrograms = {
         'create': ('shorten',),
     },
     'vhd': {
+        'extract': ('7z',),
+        'list': ('7z',),
+        'test': ('7z',),
+    },
+    'vhdx': {
         'extract': ('7z',),
         'list': ('7z',),
         'test': ('7z',),
