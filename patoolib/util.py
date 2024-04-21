@@ -140,6 +140,7 @@ def add_mimedb_data(mimedb):
     add_mimetype(mimedb, 'application/x-shar', '.shar')
     add_mimetype(mimedb, 'application/x-tar', '.cbt')
     add_mimetype(mimedb, 'application/x-vhd', '.vhd')
+    add_mimetype(mimedb, 'application/x-vhdx-disk', '.vhdx')
     add_mimetype(mimedb, 'audio/x-ape', '.ape')
     add_mimetype(mimedb, 'audio/x-shn', '.shn')
     add_mimetype(mimedb, 'audio/flac', '.flac')
