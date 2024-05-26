@@ -265,7 +265,7 @@ def guess_mime_mimedb (filename):
     """
     mime, encoding = None, None
     if mimedb is not None:
-        mime, encoding = mimedb.guess_type(filename, strict=False)
+        mime, encoding = mimedb.guess_type(filename.lower(), strict=False)
     if mime not in ArchiveMimetypes and encoding in ArchiveCompressions:
         # Files like 't.txt.gz' are recognized with encoding as format, and
         # an unsupported mime-type like 'text/plain'. Fix this.
