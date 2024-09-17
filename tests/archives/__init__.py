@@ -75,7 +75,9 @@ class ArchiveTest (unittest.TestCase):
         try:
             olddir = patoolib.util.chdir(tmpdir)
             try:
-                output = patoolib.extract_archive(archive, program=self.program, verbosity=verbosity, interactive=False)
+                result = patoolib.extract_archive(archive, program=self.program, verbosity=verbosity, interactive=False)
+                self.assertEqual(result.program, self.program, f"Program mismatch: {result.program} != {self.program}")
+                output = result.extract_dir
                 if check:
                     self.check_extracted_archive(archive, output, check)
             finally:
