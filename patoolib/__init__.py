@@ -27,6 +27,7 @@ import rarfile
 import zipfile
 # PEP 396
 from .configuration import App, Version as __version__
+from .types import ExtractResult, CommandResult
 __all__ = ['list_formats', 'list_archive', 'extract_archive', 'test_archive',
     'create_archive', 'diff_archives', 'search_archive', 'repack_archive',
     'recompress_archive']
@@ -427,7 +428,7 @@ def move_outdir_orphan (outdir):
     return (False, "multiple files in root")
 
 
-def run_archive_cmdlist (archive_cmdlist, verbosity=0):
+def run_archive_cmdlist (archive_cmdlist, verbosity=0) -> CommandResult:
     """Run archive command."""
     # archive_cmdlist is a command list with optional keyword arguments
     if isinstance(archive_cmdlist, tuple):
@@ -476,7 +477,7 @@ def cleanup_outdir (outdir, archive):
 
 
 def _extract_archive(archive, verbosity=0, interactive=True, outdir=None,
-                     program=None, format=None, compression=None):
+                     program=None, format=None, compression=None)-> ExtractResult:
     """Extract an archive.
     @return: output directory if command is 'extract', else None
     """
@@ -493,18 +494,19 @@ def _extract_archive(archive, verbosity=0, interactive=True, outdir=None,
         do_cleanup_outdir = False
     try:
         cmdlist = get_archive_cmdlist(archive, compression, program, verbosity, interactive, outdir)
+        command_result = None
         if cmdlist:
             # an empty command list means the get_archive_cmdlist() function
             # already handled the command (eg. when it's a builtin Python
             # function)
-            run_archive_cmdlist(cmdlist, verbosity=verbosity)
+            command_result = run_archive_cmdlist(cmdlist, verbosity=verbosity)
         if do_cleanup_outdir:
             target, msg = cleanup_outdir(outdir, archive)
         else:
             target, msg = outdir, "`%s'" % outdir
         if verbosity >= 0:
             util.log_info("... %s extracted to %s." % (archive, msg))
-        return target
+        return ExtractResult(command_result=command_result, program=program, extract_dir=target)
     finally:
         # try to remove an empty temporary output directory
         if do_cleanup_outdir:
@@ -595,11 +597,11 @@ def _diff_archives (archive1, archive2, verbosity=0, interactive=True):
         raise util.PatoolError(msg)
     tmpdir1 = util.tmpdir()
     try:
-        path1 = _extract_archive(archive1, outdir=tmpdir1, verbosity=-1)
+        path1 = _extract_archive(archive1, outdir=tmpdir1, verbosity=-1).extract_dir
         tmpdir2 = util.tmpdir()
         try:
-            path2 = _extract_archive(archive2, outdir=tmpdir2, verbosity=-1)
-            return util.run_checked([diff, "-urN", path1, path2], verbosity=1, ret_ok=(0, 1))
+            path2 = _extract_archive(archive2, outdir=tmpdir2, verbosity=-1).extract_dir
+            return util.run_checked([diff, "-urN", path1, path2], verbosity=1, ret_ok=(0, 1)).return_code
         finally:
             shutil.rmtree(tmpdir2, onerror=rmtree_log_error)
     finally:
@@ -614,8 +616,8 @@ def _search_archive(pattern, archive, verbosity=0, interactive=True):
         raise util.PatoolError(msg)
     tmpdir = util.tmpdir()
     try:
-        path = _extract_archive(archive, outdir=tmpdir, verbosity=-1)
-        return util.run_checked([grep, "-r", "-e", pattern, "."], ret_ok=(0, 1), verbosity=1, cwd=path)
+        path = _extract_archive(archive, outdir=tmpdir, verbosity=-1).extract_dir
+        return util.run_checked([grep, "-r", "-e", pattern, "."], ret_ok=(0, 1), verbosity=1, cwd=path).return_code
     finally:
         shutil.rmtree(tmpdir, onerror=rmtree_log_error)
 
@@ -635,7 +637,7 @@ def _repack_archive (archive1, archive2, verbosity=0, interactive=True):
         if same_format:
             # only decompress since the format is the same
             kwargs['format'] = compression1
-        path = _extract_archive(archive1, **kwargs)
+        path = _extract_archive(archive1, **kwargs).extract_dir
         archive = os.path.abspath(archive2)
         files = tuple(os.listdir(path))
         olddir = os.getcwd()
@@ -665,7 +667,7 @@ def _recompress_archive(archive, verbosity=0, interactive=True):
     try:
         # extract
         kwargs = dict(verbosity=verbosity, format=format, outdir=tmpdir)
-        path = _extract_archive(archive, **kwargs)
+        path = _extract_archive(archive, **kwargs).extract_dir
         # compress to new file
         olddir = os.getcwd()
         os.chdir(path)
@@ -692,7 +694,7 @@ def _recompress_archive(archive, verbosity=0, interactive=True):
 
 # the patool library API
 
-def extract_archive(archive, verbosity=0, outdir=None, program=None, interactive=True):
+def extract_archive(archive, verbosity=0, outdir=None, program=None, interactive=True) -> ExtractResult:
     """Extract given archive."""
     util.check_existing_filename(archive)
     if verbosity >= 0:

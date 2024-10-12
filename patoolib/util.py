@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Utility functions."""
 from __future__ import print_function
+import contextlib
 import os
 import re
 import sys
@@ -26,6 +27,8 @@ import time
 import traceback
 import locale
 from . import configuration, ArchiveMimetypes, ArchiveCompressions
+from typing import Optional
+from .types import CommandResult
 try:
     from shutil import which
 except ImportError:
@@ -163,6 +166,11 @@ class PatoolError (Exception):
     """Raised when errors occur."""
     pass
 
+class PatoolCommandError (PatoolError):
+    def __init__(self, *args, command_result:CommandResult, **kwargs):
+        self.command_result = command_result
+        super().__init__(self, *args, **kwargs)
+
 
 class memoized (object):
     """Decorator that caches a function's return value each time it is called.
@@ -198,11 +206,12 @@ def backtick (cmd, encoding='utf-8'):
     return data.decode(encoding)
 
 
-def run (cmd, verbosity=0, **kwargs):
+def run (cmd, verbosity=0, **kwargs) -> CommandResult:
     """Run command without error checking.
     @return: command return code"""
     # Note that shell_quote_nt() result is not suitable for copy-paste
     # (especially on Unix systems), but it looks nicer than shell_quote().
+    cmd_as_list = cmd
     if verbosity >= 0:
         log_info("running %s" % " ".join(map(shell_quote_nt, cmd)))
     if kwargs:
@@ -212,23 +221,21 @@ def run (cmd, verbosity=0, **kwargs):
         if kwargs.get("shell"):
             # for shell calls the command must be a string
             cmd = " ".join(cmd)
-    if verbosity < 1:
-        # hide command output on stdout
-        with open(os.devnull, 'wb') as devnull:
-            kwargs['stdout'] = devnull
-            res = subprocess.call(cmd, **kwargs)
-    else:
-        res = subprocess.call(cmd, **kwargs)
-    return res
+    res = subprocess.run(cmd, capture_output=True, errors='ignore', **kwargs)
+    if verbosity >= 1:
+        with contextlib.suppress(Exception):
+            print(res.stdout)
+            print(res.stderr)
+    return CommandResult(return_code=res.returncode, stdout=res.stdout, stderr=res.stderr, cmdlist=cmd_as_list)
 
 
-def run_checked (cmd, ret_ok=(0,), **kwargs):
+def run_checked (cmd, ret_ok=(0,), **kwargs) -> CommandResult:
     """Run command and raise PatoolError on error."""
-    retcode = run(cmd, **kwargs)
-    if retcode not in ret_ok:
-        msg = "Command `%s' returned non-zero exit status %d" % (cmd, retcode)
-        raise PatoolError(msg)
-    return retcode
+    result = run(cmd, **kwargs)
+    if result.return_code not in ret_ok:
+        msg = "Command `%s' returned non-zero exit status %d" % (cmd, result.return_code)
+        raise PatoolCommandError(msg, command_result=result)
+    return result
 
 
 @memoized
