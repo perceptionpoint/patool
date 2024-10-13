@@ -210,7 +210,8 @@ class ArchiveTest (unittest.TestCase):
         try:
             olddir = patoolib.util.chdir(tmpdir)
             try:
-                output = patoolib.extract_archive(archive, program=program, interactive=False)
+                result = patoolib.extract_archive(archive, program=program, interactive=False)
+                output = result.extract_dir
                 if len(srcfiles) == 1:
                     source = os.path.join(datadir, srcfiles[0])
                     patoolib.util.run_checked([diff, "-urN", source, output])
