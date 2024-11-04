@@ -39,6 +39,7 @@ class Test7z (ArchiveTest):
         self.archive_list('t.deb')
         self.archive_list('t.iso')
         self.archive_list('t.vhd')
+        self.archive_list('t.wim')
         self.archive_extract('t.txt.gz', check=Content.Singlefile)
         self.archive_extract('t.txt.bz2', check=Content.Singlefile)
         self.archive_extract('t.txt.lzma', check=Content.Singlefile)
@@ -51,6 +52,7 @@ class Test7z (ArchiveTest):
         self.archive_extract('t.deb', check=None)
         self.archive_extract('t.iso')
         self.archive_extract('t.vhd', check=None)
+        self.archive_extract('t.wim')
         self.archive_test('t.txt.gz')
         self.archive_test('t.txt.bz2')
         self.archive_test('t.txt.lzma')
@@ -63,6 +65,7 @@ class Test7z (ArchiveTest):
         self.archive_test('t.deb')
         self.archive_test('t.iso')
         self.archive_test('t.vhd')
+        self.archive_test('t.wim')
         self.archive_create('t.txt.gz', check=Content.Singlefile)
         self.archive_create('t.txt.bz2', check=Content.Singlefile)
 
