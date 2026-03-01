@@ -1,0 +1,24 @@
+name: Deploy to Nexus
+
+on:
+  push:
+    tags: [ '*' ]
+
+jobs:
+  deploy-to-nexus:
+    runs-on: pp-self-hosted
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: astral-sh/setup-uv@v7
+
+      - name: Build wheel
+        run: uv build --wheel
+
+      - name: Upload to Nexus
+        run: uv publish
+        env:
+          UV_PUBLISH_URL: https://${{ vars.NEXUS_URL }}/repository/pypi-hosted/
+          UV_PUBLISH_USERNAME: admin
+          UV_PUBLISH_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+          UV_PUBLISH_CHECK_URL: https://${{ vars.NEXUS_URL }}/repository/pypi-hosted/simple/
